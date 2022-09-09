@@ -6,6 +6,7 @@ from player import Player
 from alien import Alien, ExtraAlien
 from laser import Laser
 from random import choice, randint
+from crt import CRT
 
 
 class Game:
@@ -22,6 +23,8 @@ class Game:
             path.join('graphics', 'player.png')).convert_alpha()
         self.life_x_start_pos = screen_width - (
                 self.life_surf.get_size()[0] * 2 + 20)
+        self.score = 0
+        self.font = pygame.font.Font(path.join('font', 'Pixeled.ttf'), 20)
 
         # Setup for obstacles
         self.shape = obstacle.shape
@@ -43,6 +46,18 @@ class Game:
         # Setup for extra alien
         self.extra_alien = pygame.sprite.GroupSingle()
         self.extra_alien_spawn_time = randint(400, 800)
+
+        # Audio
+        background_music = pygame.mixer.Sound(path.join('audio', 'music.wav'))
+        background_music.set_volume(0.03)
+        background_music.play(loops=-1)
+
+        self.laser_sound = pygame.mixer.Sound(
+            path.join('audio', 'laser.wav'))
+        self.laser_sound.set_volume(0.05)
+        self.explosion_sound = pygame.mixer.Sound(
+            path.join('audio', 'explosion.wav'))
+        self.explosion_sound.set_volume(0.1)
 
     def create_obstacle(self, x_start, y_start, offset_x):
         for row_index, row in enumerate(self.shape):
@@ -91,6 +106,7 @@ class Game:
             random_alien = choice(self.aliens.sprites())
             laser_sprite = Laser(random_alien.rect.center, 6, screen_height)
             self.alien_lasers.add(laser_sprite)
+            self.laser_sound.play()
 
     def extra_alien_timer(self):
         self.extra_alien_spawn_time -= 1
@@ -108,11 +124,17 @@ class Game:
                     laser.kill()
 
                 # alien collisions
-                if pygame.sprite.spritecollide(laser, self.aliens, True):
+                aliens_hit = pygame.sprite.spritecollide(laser, self.aliens,
+                                                         True)
+                if aliens_hit:
+                    for alien in aliens_hit:
+                        self.score += alien.value
                     laser.kill()
+                    self.explosion_sound.play()
 
                 # extra alien collision
                 if pygame.sprite.spritecollide(laser, self.extra_alien, True):
+                    self.score += 500
                     laser.kill()
 
         # Alien lasers
@@ -144,23 +166,37 @@ class Game:
                     life * (self.life_surf.get_size()[0] + 10))
             screen.blit(self.life_surf, (x, 8))
 
+    def display_score(self):
+        score_surf = self.font.render(f'score:  {self.score}', False, 'white')
+        score_rect = score_surf.get_rect(topleft=(10, -10))
+        screen.blit(score_surf, score_rect)
+
+    def victory_message(self):
+        if not self.aliens.sprites():
+            victory_surf = self.font.render('Victory', False, 'white')
+            victory_rect = victory_surf.get_rect(center=(screen_width / 2,
+                                                         screen_height / 2))
+            screen.blit(victory_surf, victory_rect)
+
     def run(self):
         self.player.update()
+        self.alien_lasers.update()
+        self.extra_alien.update()
+
         self.aliens.update(self.alien_direction)
         self.alien_position_checkup()
-        self.alien_lasers.update()
         self.extra_alien_timer()
-        self.extra_alien.update()
         self.collision_checks()
-        self.display_lives()
 
         self.player.sprite.lasers.draw(screen)
         self.player.draw(screen)
-
         self.blocks.draw(screen)
         self.aliens.draw(screen)
         self.alien_lasers.draw(screen)
         self.extra_alien.draw(screen)
+        self.display_lives()
+        self.display_score()
+        self.victory_message()
 
 
 if __name__ == '__main__':
@@ -173,6 +209,7 @@ if __name__ == '__main__':
                                                         'game_icon.png')))
     clock = pygame.time.Clock()
     game = Game()
+    crt = CRT(screen, screen_width, screen_height)
 
     ALIENLASER = pygame.USEREVENT + 1
     pygame.time.set_timer(ALIENLASER, 800)
@@ -187,6 +224,7 @@ if __name__ == '__main__':
 
         screen.fill((30, 30, 30))
         game.run()
+        crt.draw()
 
         pygame.display.flip()
         clock.tick(60)
