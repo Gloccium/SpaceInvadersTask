@@ -1,16 +1,19 @@
 import pygame
 from sys import exit
 from os import path
+from player import Player
 
 
 class Game:
     def __init__(self):
-        pass
+        player_sprite = Player((screen_width / 2, screen_height),
+                               screen_width,
+                               5)
+        self.player = pygame.sprite.GroupSingle(player_sprite)
 
     def run(self):
-        pass
-        # update all sprite groups
-        # drawing all sprites
+        self.player.update()
+        self.player.draw(screen)
 
 
 if __name__ == '__main__':
@@ -20,7 +23,6 @@ if __name__ == '__main__':
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption('Space invaders')
     pygame.display.set_icon(pygame.image.load(path.join('Graphics',
-                                                        'Icon',
                                                         'game_icon.png')))
     clock = pygame.time.Clock()
     game = Game()
