@@ -50,7 +50,7 @@ class Game:
 
         # Audio
         background_music = pygame.mixer.Sound(path.join('audio', 'music.wav'))
-        background_music.set_volume(0.03)
+        background_music.set_volume(0.05)
         background_music.play(loops=-1)
 
         self.laser_sound = pygame.mixer.Sound(
@@ -135,8 +135,9 @@ class Game:
 
                 # extra alien collision
                 if pygame.sprite.spritecollide(laser, self.extra_alien, True):
-                    self.score += 500
+                    self.score += randint(50, 100)
                     laser.kill()
+                    self.explosion_sound.play()
 
         # Alien lasers
         if self.alien_lasers:
@@ -210,8 +211,8 @@ if __name__ == '__main__':
     game = Game()
     crt = CRT(screen, screen_width, screen_height)
 
-    ALIENLASER = pygame.USEREVENT + 1
-    pygame.time.set_timer(ALIENLASER, 800)
+    ALIEN_LASER = pygame.USEREVENT + 1
+    pygame.time.set_timer(ALIEN_LASER, 800)
 
     while True:
         for event in pygame.event.get():
@@ -219,7 +220,7 @@ if __name__ == '__main__':
                 pygame.quit()
                 exit()
             if game_active:
-                if event.type == ALIENLASER:
+                if event.type == ALIEN_LASER:
                     game.alien_shoot()
             else:
                 if event.type == pygame.KEYDOWN \
