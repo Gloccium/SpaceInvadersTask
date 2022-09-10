@@ -204,9 +204,9 @@ if __name__ == '__main__':
     pygame.init()
     screen_width = 600
     screen_height = 600
-    game_active = False
     screen = pygame.display.set_mode((screen_width, screen_height))
     clock = pygame.time.Clock()
+    game_active = False
     game = Game()
     crt = CRT(screen, screen_width, screen_height)
 
