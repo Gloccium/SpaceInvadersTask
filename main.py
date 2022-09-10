@@ -7,11 +7,15 @@ from alien import Alien, ExtraAlien
 from laser import Laser
 from random import choice, randint
 from crt import CRT
-from menu import define_menu
+from menu import show_start_menu, show_restart_window
+from game_states import GameStates
 
 
 class Game:
     def __init__(self):
+        # Setup for game states
+        self.game_state = GameStates.MAIN_MENU.value
+
         # Setup for player
         player_sprite = Player((screen_width / 2, screen_height),
                                screen_width,
@@ -49,10 +53,6 @@ class Game:
         self.extra_alien_spawn_time = randint(400, 800)
 
         # Audio
-        background_music = pygame.mixer.Sound(path.join('audio', 'music.wav'))
-        background_music.set_volume(0.05)
-        background_music.play(loops=-1)
-
         self.laser_sound = pygame.mixer.Sound(
             path.join('audio', 'laser.wav'))
         self.laser_sound.set_volume(0.05)
@@ -151,16 +151,14 @@ class Game:
                     laser.kill()
                     self.lives -= 1
                     if self.lives <= 0:
-                        pygame.quit()
-                        exit()
+                        self.game_state = GameStates.RESTART_WINDOW.value
         # Aliens
         if self.aliens:
             for alien in self.aliens:
                 pygame.sprite.spritecollide(alien, self.blocks, True)
 
                 if pygame.sprite.spritecollide(alien, self.player, False):
-                    pygame.quit()
-                    exit()
+                    self.game_state = GameStates.RESTART_WINDOW.value
 
     def display_lives(self):
         for life in range(self.lives - 1):
@@ -172,20 +170,6 @@ class Game:
         score_surf = self.font.render(f'score:  {self.score}', False, 'white')
         score_rect = score_surf.get_rect(topleft=(10, -10))
         screen.blit(score_surf, score_rect)
-
-    # def victory_message(self):
-    #    if not self.aliens.sprites():
-    #        victory_surf = self.font.render('Victory', False, 'white')
-    #        victory_rect = victory_surf.get_rect(
-    #            center=(screen_width / 2, screen_height / 2 - 100))
-    #        score_surf = self.font.render(f'Your score is: {self.score}',
-    #                                      False, 'white')
-    #        score_rect = score_surf.get_rect(center=(screen_width / 2,
-    #                                                 screen_height / 2))
-
-    #        screen.fill('black')
-    #        screen.blit(victory_surf, victory_rect)
-    #        screen.blit(score_surf, score_rect)
 
     def game_continuation(self):
         if not self.aliens.sprites():
@@ -212,8 +196,51 @@ class Game:
         self.extra_alien.draw(screen)
         self.display_lives()
         self.display_score()
-        # self.victory_message()
         self.game_continuation()
+
+
+def start_game():
+    clock = pygame.time.Clock()
+    game = Game()
+    crt = CRT(screen, screen_width, screen_height)
+
+    ALIEN_LASER = pygame.USEREVENT + 1
+    pygame.time.set_timer(ALIEN_LASER, 800)
+
+    background_music = pygame.mixer.Sound(path.join('audio', 'music.wav'))
+    background_music.set_volume(0.05)
+    background_music.play(loops=-1)
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
+
+            if game.game_state == GameStates.GAME_SCREEN.value:
+                if event.type == ALIEN_LASER:
+                    game.alien_shoot()
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB \
+                    and game.game_state == GameStates.RESTART_WINDOW.value:
+                game = Game()
+                game.game_state = GameStates.GAME_SCREEN.value
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB \
+                    and game.game_state == GameStates.MAIN_MENU.value:
+                game.game_state = GameStates.GAME_SCREEN.value
+
+        if game.game_state == GameStates.MAIN_MENU.value:
+            show_start_menu(screen)
+        if game.game_state == GameStates.GAME_SCREEN.value:
+            screen.fill((30, 30, 30))
+            game.run()
+            crt.draw()
+        if game.game_state == GameStates.RESTART_WINDOW.value:
+            show_restart_window(screen)
+
+        pygame.display.flip()
+        clock.tick(60)
 
 
 if __name__ == '__main__':
@@ -221,34 +248,4 @@ if __name__ == '__main__':
     screen_width = 600
     screen_height = 600
     screen = pygame.display.set_mode((screen_width, screen_height))
-    clock = pygame.time.Clock()
-    game_active = False
-    game = Game()
-    crt = CRT(screen, screen_width, screen_height)
-
-    ALIEN_LASER = pygame.USEREVENT + 1
-    pygame.time.set_timer(ALIEN_LASER, 800)
-
-    while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-            if game_active:
-                if event.type == ALIEN_LASER:
-                    game.alien_shoot()
-            else:
-                if event.type == pygame.KEYDOWN \
-                        and event.key == pygame.K_TAB:
-                    game_active = True
-
-        if game_active:
-            screen.fill('#1E1E1E')
-            game.run()
-            crt.draw()
-
-        else:
-            define_menu(screen)
-
-        pygame.display.flip()
-        clock.tick(60)
+    start_game()

@@ -2,7 +2,7 @@ import pygame
 from os import path
 
 
-def define_menu(screen):
+def show_start_menu(screen):
     pygame.display.set_caption('Space Invaders')
     pygame.display.set_icon(pygame.image.load(path.join('graphics',
                                                         'game_icon.png')))
@@ -38,3 +38,17 @@ def define_menu(screen):
     screen.blit(green_alien, green_alien_rect)
     screen.blit(yellow_alien, yellow_alien_rect)
     screen.blit(player, player_rect)
+
+
+def show_restart_window(screen):
+    font = pygame.font.Font(path.join('font', 'Pixeled.ttf'), 30)
+
+    label = font.render('Game over', False, 'white')
+    label_rect = label.get_rect(center=(300, 200))
+    
+    game_message = font.render('Press TAB to try again', False, 'white')
+    game_message_rect = game_message.get_rect(center=(300, 300))
+
+    screen.fill('black')
+    screen.blit(label, label_rect)
+    screen.blit(game_message, game_message_rect)
