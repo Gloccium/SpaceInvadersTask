@@ -182,7 +182,7 @@ class Game:
     #                                      False, 'white')
     #        score_rect = score_surf.get_rect(center=(screen_width / 2,
     #                                                 screen_height / 2))
-    #
+
     #        screen.fill('black')
     #        screen.blit(victory_surf, victory_rect)
     #        screen.blit(score_surf, score_rect)
@@ -243,7 +243,7 @@ if __name__ == '__main__':
                     game_active = True
 
         if game_active:
-            screen.fill((30, 30, 30))
+            screen.fill('#1E1E1E')
             game.run()
             crt.draw()
 
