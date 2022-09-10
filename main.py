@@ -7,6 +7,7 @@ from alien import Alien, ExtraAlien
 from laser import Laser
 from random import choice, randint
 from crt import CRT
+from menu import define_menu
 
 
 class Game:
@@ -203,10 +204,8 @@ if __name__ == '__main__':
     pygame.init()
     screen_width = 600
     screen_height = 600
+    game_active = False
     screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption('Space Invaders')
-    pygame.display.set_icon(pygame.image.load(path.join('graphics',
-                                                        'game_icon.png')))
     clock = pygame.time.Clock()
     game = Game()
     crt = CRT(screen, screen_width, screen_height)
@@ -219,12 +218,21 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 pygame.quit()
                 exit()
-            if event.type == ALIENLASER:
-                game.alien_shoot()
+            if game_active:
+                if event.type == ALIENLASER:
+                    game.alien_shoot()
+            else:
+                if event.type == pygame.KEYDOWN \
+                        and event.key == pygame.K_SPACE:
+                    game_active = True
 
-        screen.fill((30, 30, 30))
-        game.run()
-        crt.draw()
+        if game_active:
+            screen.fill((30, 30, 30))
+            game.run()
+            crt.draw()
+
+        else:
+            define_menu(screen)
 
         pygame.display.flip()
         clock.tick(60)
