@@ -12,7 +12,7 @@ def define_menu(screen):
     game_name = font.render('Space Invaders', False, 'white')
     game_name_rect = game_name.get_rect(center=(300, 200))
 
-    game_message = font.render('Press SPACE to begin', False, 'white')
+    game_message = font.render('Press TAB to begin', False, 'white')
     game_message_rect = game_message.get_rect(center=(300, 300))
 
     red_alien = pygame.image.load(

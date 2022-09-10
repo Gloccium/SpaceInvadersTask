@@ -173,12 +173,26 @@ class Game:
         score_rect = score_surf.get_rect(topleft=(10, -10))
         screen.blit(score_surf, score_rect)
 
-    def victory_message(self):
+    # def victory_message(self):
+    #    if not self.aliens.sprites():
+    #        victory_surf = self.font.render('Victory', False, 'white')
+    #        victory_rect = victory_surf.get_rect(
+    #            center=(screen_width / 2, screen_height / 2 - 100))
+    #        score_surf = self.font.render(f'Your score is: {self.score}',
+    #                                      False, 'white')
+    #        score_rect = score_surf.get_rect(center=(screen_width / 2,
+    #                                                 screen_height / 2))
+    #
+    #        screen.fill('black')
+    #        screen.blit(victory_surf, victory_rect)
+    #        screen.blit(score_surf, score_rect)
+
+    def game_continuation(self):
         if not self.aliens.sprites():
-            victory_surf = self.font.render('Victory', False, 'white')
-            victory_rect = victory_surf.get_rect(center=(screen_width / 2,
-                                                         screen_height / 2))
-            screen.blit(victory_surf, victory_rect)
+            self.alien_setup(rows=6, columns=8)
+            self.create_multiple_obstacles(self.obstacle_x_positions,
+                                           x_start=screen_width / 15,
+                                           y_start=480)
 
     def run(self):
         self.player.update()
@@ -198,7 +212,8 @@ class Game:
         self.extra_alien.draw(screen)
         self.display_lives()
         self.display_score()
-        self.victory_message()
+        # self.victory_message()
+        self.game_continuation()
 
 
 if __name__ == '__main__':
@@ -224,7 +239,7 @@ if __name__ == '__main__':
                     game.alien_shoot()
             else:
                 if event.type == pygame.KEYDOWN \
-                        and event.key == pygame.K_SPACE:
+                        and event.key == pygame.K_TAB:
                     game_active = True
 
         if game_active:
