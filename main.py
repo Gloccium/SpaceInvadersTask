@@ -8,7 +8,7 @@ from essentials.laser import Laser
 from random import choice, randint
 from essentials.crt import CRT
 from essentials.menu import show_start_menu, show_restart_window, \
-    show_pause_window
+    show_pause_window, show_leaderboard_window
 from essentials.game_states import GameStates
 
 
@@ -30,6 +30,7 @@ class Game:
         self.life_x_start_pos = screen_width - (
                 self.life_surf.get_size()[0] * 2 + 20)
         self.score = 0
+        self.highest_score = open('leaderboard.txt').readline()
         self.font = pygame.font.Font(
             path.join('interface', 'font', 'Pixeled.ttf'), 20)
 
@@ -154,6 +155,7 @@ class Game:
                     self.lives -= 1
                     if self.lives <= 0:
                         self.game_state = GameStates.RESTART_WINDOW.value
+                        self.load_highest_score()
         # Aliens
         if self.aliens:
             for alien in self.aliens:
@@ -161,6 +163,7 @@ class Game:
 
                 if pygame.sprite.spritecollide(alien, self.player, False):
                     self.game_state = GameStates.RESTART_WINDOW.value
+                    self.load_highest_score()
 
     def display_lives(self):
         for life in range(self.lives - 1):
@@ -192,10 +195,20 @@ class Game:
             show_pause_window(screen)
             pygame.display.update()
 
+    def update_highest_score(self):
+        if self.score > int(self.highest_score):
+            self.highest_score = self.score
+
+    def load_highest_score(self):
+        with open('leaderboard.txt', 'w') as file:
+            file.write(str(self.highest_score))
+            file.close()
+
     def run(self):
         self.player.update()
         self.alien_lasers.update()
         self.extra_alien.update()
+        self.update_highest_score()
 
         self.aliens.update(self.alien_direction)
         self.alien_position_checkup()
@@ -229,6 +242,7 @@ def start_game():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                game.load_highest_score()
                 pygame.quit()
                 exit()
 
@@ -248,9 +262,11 @@ def start_game():
                 if event.key == pygame.K_TAB:
                     game.game_state = GameStates.GAME_SCREEN.value
                 if event.key == pygame.K_l:
-                    pass
-                if event.key == pygame.K_m:
-                    game.game_state = GameStates.MAIN_MENU.value
+                    game.game_state = GameStates.LEADERBOARD_SCREEN.value
+
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_m and \
+                    game.game_state == GameStates.LEADERBOARD_SCREEN.value:
+                game.game_state = GameStates.MAIN_MENU.value
 
         if game.game_state == GameStates.MAIN_MENU.value:
             show_start_menu(screen)
@@ -260,6 +276,8 @@ def start_game():
             crt.draw()
         if game.game_state == GameStates.RESTART_WINDOW.value:
             show_restart_window(screen)
+        if game.game_state == GameStates.LEADERBOARD_SCREEN.value:
+            show_leaderboard_window(screen)
 
         pygame.display.flip()
         clock.tick(60)
