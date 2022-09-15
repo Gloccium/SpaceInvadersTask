@@ -52,3 +52,18 @@ def show_restart_window(screen):
     screen.fill('black')
     screen.blit(label, label_rect)
     screen.blit(game_message, game_message_rect)
+
+
+def show_pause_window(screen):
+    font = pygame.font.Font(path.join('interface', 'font', 'Pixeled.ttf'), 30)
+
+    pause_message = font.render('Paused', False, 'white')
+    pause_message_rect = pause_message.get_rect(center=(300, 200))
+
+    game_message = font.render('Press C to continue',
+                               False, 'white')
+    game_message_rect = game_message.get_rect(center=(300, 300))
+
+    screen.fill('black')
+    screen.blit(pause_message, pause_message_rect)
+    screen.blit(game_message, game_message_rect)

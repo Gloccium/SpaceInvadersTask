@@ -7,7 +7,8 @@ from essentials.alien import Alien, ExtraAlien
 from essentials.laser import Laser
 from random import choice, randint
 from essentials.crt import CRT
-from essentials.menu import show_start_menu, show_restart_window
+from essentials.menu import show_start_menu, show_restart_window, \
+    show_pause_window
 from essentials.game_states import GameStates
 
 
@@ -179,6 +180,22 @@ class Game:
                                            x_start=screen_width / 15,
                                            y_start=480)
 
+    @staticmethod
+    def pause():
+        paused = True
+
+        while paused:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    quit()
+
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
+                    paused = False
+
+            show_pause_window(screen)
+            pygame.display.update()
+
     def run(self):
         self.player.update()
         self.alien_lasers.update()
@@ -222,6 +239,8 @@ def start_game():
             if game.game_state == GameStates.GAME_SCREEN.value:
                 if event.type == ALIEN_LASER:
                     game.alien_shoot()
+                if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                    game.pause()
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB \
                     and game.game_state == GameStates.RESTART_WINDOW.value:
