@@ -243,9 +243,14 @@ def start_game():
                 game = Game()
                 game.game_state = GameStates.GAME_SCREEN.value
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB \
-                    and game.game_state == GameStates.MAIN_MENU.value:
-                game.game_state = GameStates.GAME_SCREEN.value
+            if event.type == pygame.KEYDOWN and game.game_state \
+                    == GameStates.MAIN_MENU.value:
+                if event.key == pygame.K_TAB:
+                    game.game_state = GameStates.GAME_SCREEN.value
+                if event.key == pygame.K_l:
+                    pass
+                if event.key == pygame.K_m:
+                    game.game_state = GameStates.MAIN_MENU.value
 
         if game.game_state == GameStates.MAIN_MENU.value:
             show_start_menu(screen)

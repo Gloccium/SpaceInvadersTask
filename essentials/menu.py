@@ -8,12 +8,18 @@ def show_start_menu(screen):
         path.join('interface', 'graphics', 'game_icon.png')))
 
     font = pygame.font.Font(path.join('interface', 'font', 'Pixeled.ttf'), 30)
+    leaderboard_font = pygame.font.Font(path.join('interface', 'font',
+                                                  'Pixeled.ttf'), 20)
 
     game_name = font.render('Space Invaders', False, 'white')
     game_name_rect = game_name.get_rect(center=(300, 200))
 
     game_message = font.render('Press TAB to begin', False, 'white')
     game_message_rect = game_message.get_rect(center=(300, 300))
+
+    leaderboard_message = leaderboard_font.render(
+        'Press L to open leaderboard', False, 'white')
+    leaderboard_message_rect = leaderboard_message.get_rect(center=(300, 400))
 
     red_alien = pygame.image.load(
         path.join('interface', 'graphics', 'red.png')).convert_alpha()
@@ -34,6 +40,7 @@ def show_start_menu(screen):
     screen.fill('black')
     screen.blit(game_name, game_name_rect)
     screen.blit(game_message, game_message_rect)
+    screen.blit(leaderboard_message, leaderboard_message_rect)
     screen.blit(red_alien, red_alien_rect)
     screen.blit(green_alien, green_alien_rect)
     screen.blit(yellow_alien, yellow_alien_rect)
