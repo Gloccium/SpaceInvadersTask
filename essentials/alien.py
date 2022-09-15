@@ -5,7 +5,7 @@ from os import path
 class Alien(pygame.sprite.Sprite):
     def __init__(self, color, x, y):
         super().__init__()
-        file_path = path.join('graphics', color + '.png')
+        file_path = path.join('interface', 'graphics', color + '.png')
         self.image = pygame.image.load(file_path).convert_alpha()
         self.rect = self.image.get_rect(topleft=(x, y))
 
@@ -23,7 +23,7 @@ class Alien(pygame.sprite.Sprite):
 class ExtraAlien(pygame.sprite.Sprite):
     def __init__(self, side, screen_width):
         super().__init__()
-        self.image = pygame.image.load(path.join('graphics',
+        self.image = pygame.image.load(path.join('interface', 'graphics',
                                                  'extra.png')).convert_alpha()
 
         if side == 'right':

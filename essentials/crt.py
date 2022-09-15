@@ -10,7 +10,7 @@ class CRT:
         self.crt_screen_width = screen_width
         self.crt_screen_height = screen_height
         self.tv = pygame.image.load(
-            path.join('graphics', 'tv.png')).convert_alpha()
+            path.join('interface', 'graphics', 'tv.png')).convert_alpha()
         self.tv = pygame.transform.scale(self.tv,
                                          (screen_width, screen_height))
 

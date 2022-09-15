@@ -1,14 +1,14 @@
 import pygame
-import obstacle
+from essentials import obstacle
 from sys import exit
 from os import path
-from player import Player
-from alien import Alien, ExtraAlien
-from laser import Laser
+from essentials.player import Player
+from essentials.alien import Alien, ExtraAlien
+from essentials.laser import Laser
 from random import choice, randint
-from crt import CRT
-from menu import show_start_menu, show_restart_window
-from game_states import GameStates
+from essentials.crt import CRT
+from essentials.menu import show_start_menu, show_restart_window
+from essentials.game_states import GameStates
 
 
 class Game:
@@ -25,11 +25,12 @@ class Game:
         # Setup for health and score systems
         self.lives = 3
         self.life_surf = pygame.image.load(
-            path.join('graphics', 'player.png')).convert_alpha()
+            path.join('interface', 'graphics', 'player.png')).convert_alpha()
         self.life_x_start_pos = screen_width - (
                 self.life_surf.get_size()[0] * 2 + 20)
         self.score = 0
-        self.font = pygame.font.Font(path.join('font', 'Pixeled.ttf'), 20)
+        self.font = pygame.font.Font(
+            path.join('interface', 'font', 'Pixeled.ttf'), 20)
 
         # Setup for obstacles
         self.shape = obstacle.shape
@@ -54,10 +55,10 @@ class Game:
 
         # Audio
         self.laser_sound = pygame.mixer.Sound(
-            path.join('audio', 'laser.wav'))
+            path.join('interface', 'audio', 'laser.wav'))
         self.laser_sound.set_volume(0.05)
         self.explosion_sound = pygame.mixer.Sound(
-            path.join('audio', 'explosion.wav'))
+            path.join('interface', 'audio', 'explosion.wav'))
         self.explosion_sound.set_volume(0.1)
 
     def create_obstacle(self, x_start, y_start, offset_x):
@@ -207,7 +208,8 @@ def start_game():
     ALIEN_LASER = pygame.USEREVENT + 1
     pygame.time.set_timer(ALIEN_LASER, 800)
 
-    background_music = pygame.mixer.Sound(path.join('audio', 'music.wav'))
+    background_music = pygame.mixer.Sound(
+        path.join('interface', 'audio', 'music.wav'))
     background_music.set_volume(0.05)
     background_music.play(loops=-1)
 
