@@ -22,7 +22,7 @@ class Game:
                                screen_width,
                                5)
         self.player = pygame.sprite.GroupSingle(player_sprite)
-
+        
         # Setup for health and score systems
         self.lives = 3
         self.life_surf = pygame.image.load(
@@ -139,6 +139,7 @@ class Game:
 
                 # extra alien collision
                 if pygame.sprite.spritecollide(laser, self.extra_alien, True):
+                    self.player_get_bonus()
                     self.score += randint(50, 100)
                     laser.kill()
                     self.explosion_sound.play()
@@ -205,6 +206,12 @@ class Game:
             file.write(str(self.highest_score))
             file.close()
 
+    def player_get_bonus(self):
+        self.player.sprite.laser_cooldown = 100
+
+    def player_end_bonus(self):
+        self.player.sprite.laser_cooldown = 600
+
     def run(self):
         self.player.update()
         self.alien_lasers.update()
@@ -235,6 +242,9 @@ def start_game():
     ALIEN_LASER = pygame.USEREVENT + 1
     pygame.time.set_timer(ALIEN_LASER, 800)
 
+    PLAYER_BONUS_END = pygame.USEREVENT + 2
+    pygame.time.set_timer(PLAYER_BONUS_END, 5000)
+
     background_music = pygame.mixer.Sound(
         path.join('interface', 'audio', 'music.wav'))
     background_music.set_volume(0.05)
@@ -250,6 +260,8 @@ def start_game():
             if game.game_state == GameStates.GAME_SCREEN.value:
                 if event.type == ALIEN_LASER:
                     game.alien_shoot()
+                if event.type == PLAYER_BONUS_END:
+                    game.player_end_bonus()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                     game.pause()
 
