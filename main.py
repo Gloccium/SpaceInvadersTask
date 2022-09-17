@@ -4,7 +4,7 @@ from sys import exit
 from os import path
 from essentials.player import Player
 from essentials.alien import Alien, ExtraAlien
-from essentials.laser import Laser, DiagonalLaser
+from essentials.laser import Laser
 from random import choice, randint
 from essentials.crt import CRT
 from essentials.menu import show_start_menu, show_restart_window, \
