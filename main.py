@@ -4,7 +4,7 @@ from sys import exit
 from os import path
 from essentials.player import Player
 from essentials.alien import Alien, ExtraAlien
-from essentials.laser import Laser
+from essentials.laser import Laser, DiagonalLaser
 from random import choice, randint
 from essentials.crt import CRT
 from essentials.menu import show_start_menu, show_restart_window, \
@@ -142,6 +142,55 @@ class Game:
                     laser.kill()
                     self.explosion_sound.play()
 
+        # Player left diagonal lasers
+        if self.player.sprite.left_diagonal_lasers:
+            for left_diagonal_laser in self.player.sprite.left_diagonal_lasers:
+                # obstacle collisions
+                if pygame.sprite.spritecollide(left_diagonal_laser,
+                                               self.blocks, True):
+                    left_diagonal_laser.kill()
+
+                # alien collisions
+                aliens_hit = pygame.sprite.spritecollide(left_diagonal_laser,
+                                                         self.aliens, True)
+                if aliens_hit:
+                    for alien in aliens_hit:
+                        self.score += alien.value
+                    left_diagonal_laser.kill()
+                    self.explosion_sound.play()
+
+                # extra alien collision
+                if pygame.sprite.spritecollide(left_diagonal_laser,
+                                               self.extra_alien, True):
+                    self.score += randint(50, 100)
+                    left_diagonal_laser.kill()
+                    self.explosion_sound.play()
+
+        # Player right diagonal lasers
+        if self.player.sprite.right_diagonal_lasers:
+            for right_diagonal_laser in self.player.sprite \
+                    .right_diagonal_lasers:
+                # obstacle collisions
+                if pygame.sprite.spritecollide(right_diagonal_laser,
+                                               self.blocks, True):
+                    right_diagonal_laser.kill()
+
+                # alien collisions
+                aliens_hit = pygame.sprite.spritecollide(right_diagonal_laser,
+                                                         self.aliens, True)
+                if aliens_hit:
+                    for alien in aliens_hit:
+                        self.score += alien.value
+                    right_diagonal_laser.kill()
+                    self.explosion_sound.play()
+
+                # extra alien collision
+                if pygame.sprite.spritecollide(right_diagonal_laser,
+                                               self.extra_alien, True):
+                    self.score += randint(50, 100)
+                    right_diagonal_laser.kill()
+                    self.explosion_sound.play()
+
         # Alien lasers
         if self.alien_lasers:
             for laser in self.alien_lasers:
@@ -216,6 +265,8 @@ class Game:
         self.collision_checks()
 
         self.player.sprite.lasers.draw(screen)
+        self.player.sprite.left_diagonal_lasers.draw(screen)
+        self.player.sprite.right_diagonal_lasers.draw(screen)
         self.player.draw(screen)
         self.blocks.draw(screen)
         self.aliens.draw(screen)
@@ -252,10 +303,13 @@ def start_game():
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                     game.pause()
 
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_TAB \
+            if event.type == pygame.KEYDOWN \
                     and game.game_state == GameStates.RESTART_WINDOW.value:
-                game = Game()
-                game.game_state = GameStates.GAME_SCREEN.value
+                if event.key == pygame.K_TAB:
+                    game = Game()
+                    game.game_state = GameStates.GAME_SCREEN.value
+                if event.key == pygame.K_m:
+                    game.game_state = GameStates.MAIN_MENU.value
 
             if event.type == pygame.KEYDOWN and game.game_state \
                     == GameStates.MAIN_MENU.value:

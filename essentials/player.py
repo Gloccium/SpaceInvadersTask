@@ -1,6 +1,6 @@
 import pygame
 from os import path
-from essentials.laser import Laser
+from essentials.laser import Laser, DiagonalLaser
 
 
 class Player(pygame.sprite.Sprite):
@@ -16,6 +16,8 @@ class Player(pygame.sprite.Sprite):
         self.laser_cooldown = 600
 
         self.lasers = pygame.sprite.Group()
+        self.left_diagonal_lasers = pygame.sprite.Group()
+        self.right_diagonal_lasers = pygame.sprite.Group()
 
         self.laser_sound = pygame.mixer.Sound(
             path.join('interface', 'audio', 'laser.wav'))
@@ -31,6 +33,18 @@ class Player(pygame.sprite.Sprite):
 
         if keys[pygame.K_SPACE] and self.ready_to_shoot:
             self.shoot_laser()
+            self.ready_to_shoot = False
+            self.last_shoot_laser_time = pygame.time.get_ticks()
+            self.laser_sound.play()
+
+        if keys[pygame.K_q] and self.ready_to_shoot:
+            self.shoot_left_diagonal_laser()
+            self.ready_to_shoot = False
+            self.last_shoot_laser_time = pygame.time.get_ticks()
+            self.laser_sound.play()
+
+        if keys[pygame.K_e] and self.ready_to_shoot:
+            self.shoot_right_diagonal_laser()
             self.ready_to_shoot = False
             self.last_shoot_laser_time = pygame.time.get_ticks()
             self.laser_sound.play()
@@ -51,8 +65,18 @@ class Player(pygame.sprite.Sprite):
     def shoot_laser(self):
         self.lasers.add(Laser(self.rect.center, -8, self.rect.bottom))
 
+    def shoot_left_diagonal_laser(self):
+        self.left_diagonal_lasers.add(DiagonalLaser(self.rect.center, -5, -5,
+                                                    self.rect.bottom))
+
+    def shoot_right_diagonal_laser(self):
+        self.right_diagonal_lasers.add(DiagonalLaser(self.rect.center, 5, -5,
+                                                     self.rect.bottom))
+
     def update(self):
         self.get_input()
         self.constraint()
         self.recharge()
         self.lasers.update()
+        self.left_diagonal_lasers.update()
+        self.right_diagonal_lasers.update()

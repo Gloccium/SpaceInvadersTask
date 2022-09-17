@@ -49,6 +49,8 @@ def show_start_menu(screen):
 
 def show_restart_window(screen):
     font = pygame.font.Font(path.join('interface', 'font', 'Pixeled.ttf'), 30)
+    smaller_font = pygame.font.Font(path.join('interface', 'font',
+                                              'Pixeled.ttf'), 20)
 
     label = font.render('Game over', False, 'white')
     label_rect = label.get_rect(center=(300, 200))
@@ -56,9 +58,14 @@ def show_restart_window(screen):
     game_message = font.render('Press TAB to try again', False, 'white')
     game_message_rect = game_message.get_rect(center=(300, 300))
 
+    return_message = smaller_font.render(
+        'Press M to return to menu', False, 'white')
+    return_message_rect = return_message.get_rect(center=(300, 400))
+
     screen.fill('black')
     screen.blit(label, label_rect)
     screen.blit(game_message, game_message_rect)
+    screen.blit(return_message, return_message_rect)
 
 
 def show_pause_window(screen):
