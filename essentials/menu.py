@@ -84,19 +84,21 @@ def show_pause_window(screen):
 
 
 def show_leaderboard_window(screen):
-    file = open('leaderboard.txt')
-    highest_score = file.readline()
+    with open('leaderboard.txt') as f:
+        high_score = f.readline()
 
     font = pygame.font.Font(path.join('interface', 'font', 'Pixeled.ttf'),
                             20)
-    score_message = font.render(f'Current highest score is: '
-                                f'{highest_score}', False, 'white')
-    score_message_rect = score_message.get_rect(center=(300, 200))
+
+    high_score_message = font.render(f'The highest score is:'
+                                     f' {high_score}',
+                                     False, 'white')
+    high_score_message_rect = high_score_message.get_rect(center=(300, 200))
 
     game_message = font.render('Press M to return to main menu', False,
                                'white')
-    game_message_rect = game_message.get_rect(center=(300, 300
-                                                      ))
+    game_message_rect = game_message.get_rect(center=(300, 350))
+
     screen.fill('black')
-    screen.blit(score_message, score_message_rect)
+    screen.blit(high_score_message, high_score_message_rect)
     screen.blit(game_message, game_message_rect)

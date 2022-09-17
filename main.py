@@ -29,8 +29,14 @@ class Game:
             path.join('interface', 'graphics', 'player.png')).convert_alpha()
         self.life_x_start_pos = screen_width - (
                 self.life_surf.get_size()[0] * 2 + 20)
+
         self.score = 0
-        self.highest_score = open('leaderboard.txt').readline()
+        with open('leaderboard.txt', 'r') as f:
+            try:
+                self.high_score = f.readline()
+            except ValueError:
+                raise ValueError
+
         self.font = pygame.font.Font(
             path.join('interface', 'font', 'Pixeled.ttf'), 20)
 
@@ -199,13 +205,12 @@ class Game:
             pygame.display.update()
 
     def update_highest_score(self):
-        if self.score > int(self.highest_score):
-            self.highest_score = self.score
+        if self.score > int(self.high_score):
+            self.high_score = self.score
 
     def load_highest_score(self):
-        with open('leaderboard.txt', 'w') as file:
-            file.write(str(self.highest_score))
-            file.close()
+        with open('leaderboard.txt', 'w') as f:
+            f.write(str(self.high_score))
 
     def player_get_bonus(self):
         self.player.sprite.laser_cooldown = 100
