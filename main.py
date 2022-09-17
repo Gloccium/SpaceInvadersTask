@@ -22,7 +22,7 @@ class Game:
                                screen_width,
                                5)
         self.player = pygame.sprite.GroupSingle(player_sprite)
-        
+
         # Setup for health and score systems
         self.lives = 3
         self.life_surf = pygame.image.load(
@@ -155,6 +155,7 @@ class Game:
                 if pygame.sprite.spritecollide(laser, self.player, False):
                     laser.kill()
                     self.lives -= 1
+                    self.player_get_debuff()
                     if self.lives <= 0:
                         self.game_state = GameStates.RESTART_WINDOW.value
                         self.load_highest_score()
@@ -212,6 +213,12 @@ class Game:
     def player_end_bonus(self):
         self.player.sprite.laser_cooldown = 600
 
+    def player_get_debuff(self):
+        self.player.sprite.speed = 2
+
+    def player_end_debuff(self):
+        self.player.sprite.speed = 5
+
     def run(self):
         self.player.update()
         self.alien_lasers.update()
@@ -243,7 +250,10 @@ def start_game():
     pygame.time.set_timer(ALIEN_LASER, 800)
 
     PLAYER_BONUS_END = pygame.USEREVENT + 2
-    pygame.time.set_timer(PLAYER_BONUS_END, 5000)
+    pygame.time.set_timer(PLAYER_BONUS_END, 10000)
+
+    PLAYER_DEBUFF_END = pygame.USEREVENT + 3
+    pygame.time.set_timer(PLAYER_DEBUFF_END, 3000)
 
     background_music = pygame.mixer.Sound(
         path.join('interface', 'audio', 'music.wav'))
@@ -262,6 +272,8 @@ def start_game():
                     game.alien_shoot()
                 if event.type == PLAYER_BONUS_END:
                     game.player_end_bonus()
+                if event.type == PLAYER_DEBUFF_END:
+                    game.player_end_debuff()
                 if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                     game.pause()
 
@@ -271,6 +283,7 @@ def start_game():
                     game = Game()
                     game.game_state = GameStates.GAME_SCREEN.value
                 if event.key == pygame.K_m:
+                    game = Game()
                     game.game_state = GameStates.MAIN_MENU.value
 
             if event.type == pygame.KEYDOWN and game.game_state \
