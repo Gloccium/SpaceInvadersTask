@@ -4,7 +4,7 @@ from sys import exit
 from os import path
 from essentials.player import Player
 from essentials.alien import Alien, ExtraAlien
-from essentials.laser import Laser
+from essentials.laser import FrontLaser
 from random import choice, randint
 from essentials.crt import CRT
 from essentials.menu import show_start_menu, show_restart_window, \
@@ -108,7 +108,8 @@ class Game:
     def alien_shoot(self):
         if self.aliens.sprites():
             random_alien = choice(self.aliens.sprites())
-            laser_sprite = Laser(random_alien.rect.center, 6, screen_height)
+            laser_sprite = FrontLaser(random_alien.rect.center, screen_height,
+                                      False)
             self.alien_lasers.add(laser_sprite)
             self.laser_sound.play()
 
@@ -140,55 +141,6 @@ class Game:
                 if pygame.sprite.spritecollide(laser, self.extra_alien, True):
                     self.score += randint(50, 100)
                     laser.kill()
-                    self.explosion_sound.play()
-
-        # Player left diagonal lasers
-        if self.player.sprite.left_diagonal_lasers:
-            for left_diagonal_laser in self.player.sprite.left_diagonal_lasers:
-                # obstacle collisions
-                if pygame.sprite.spritecollide(left_diagonal_laser,
-                                               self.blocks, True):
-                    left_diagonal_laser.kill()
-
-                # alien collisions
-                aliens_hit = pygame.sprite.spritecollide(left_diagonal_laser,
-                                                         self.aliens, True)
-                if aliens_hit:
-                    for alien in aliens_hit:
-                        self.score += alien.value
-                    left_diagonal_laser.kill()
-                    self.explosion_sound.play()
-
-                # extra alien collision
-                if pygame.sprite.spritecollide(left_diagonal_laser,
-                                               self.extra_alien, True):
-                    self.score += randint(50, 100)
-                    left_diagonal_laser.kill()
-                    self.explosion_sound.play()
-
-        # Player right diagonal lasers
-        if self.player.sprite.right_diagonal_lasers:
-            for right_diagonal_laser in self.player.sprite \
-                    .right_diagonal_lasers:
-                # obstacle collisions
-                if pygame.sprite.spritecollide(right_diagonal_laser,
-                                               self.blocks, True):
-                    right_diagonal_laser.kill()
-
-                # alien collisions
-                aliens_hit = pygame.sprite.spritecollide(right_diagonal_laser,
-                                                         self.aliens, True)
-                if aliens_hit:
-                    for alien in aliens_hit:
-                        self.score += alien.value
-                    right_diagonal_laser.kill()
-                    self.explosion_sound.play()
-
-                # extra alien collision
-                if pygame.sprite.spritecollide(right_diagonal_laser,
-                                               self.extra_alien, True):
-                    self.score += randint(50, 100)
-                    right_diagonal_laser.kill()
                     self.explosion_sound.play()
 
         # Alien lasers
@@ -265,8 +217,6 @@ class Game:
         self.collision_checks()
 
         self.player.sprite.lasers.draw(screen)
-        self.player.sprite.left_diagonal_lasers.draw(screen)
-        self.player.sprite.right_diagonal_lasers.draw(screen)
         self.player.draw(screen)
         self.blocks.draw(screen)
         self.aliens.draw(screen)

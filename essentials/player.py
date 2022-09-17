@@ -1,6 +1,6 @@
 import pygame
 from os import path
-from essentials.laser import Laser, DiagonalLaser
+from essentials.laser import FrontLaser, DiagonalLaser
 
 
 class Player(pygame.sprite.Sprite):
@@ -16,8 +16,6 @@ class Player(pygame.sprite.Sprite):
         self.laser_cooldown = 600
 
         self.lasers = pygame.sprite.Group()
-        self.left_diagonal_lasers = pygame.sprite.Group()
-        self.right_diagonal_lasers = pygame.sprite.Group()
 
         self.laser_sound = pygame.mixer.Sound(
             path.join('interface', 'audio', 'laser.wav'))
@@ -32,23 +30,8 @@ class Player(pygame.sprite.Sprite):
             self.rect.x -= self.speed
 
         if self.ready_to_shoot:
-            if keys[pygame.K_SPACE]:
-                self.shoot_laser()
-                self.ready_to_shoot = False
-                self.last_shoot_laser_time = pygame.time.get_ticks()
-                self.laser_sound.play()
-
-            if keys[pygame.K_q]:
-                self.shoot_left_diagonal_laser()
-                self.ready_to_shoot = False
-                self.last_shoot_laser_time = pygame.time.get_ticks()
-                self.laser_sound.play()
-
-            if keys[pygame.K_e]:
-                self.shoot_right_diagonal_laser()
-                self.ready_to_shoot = False
-                self.last_shoot_laser_time = pygame.time.get_ticks()
-                self.laser_sound.play()
+            [self.shoot_laser(key) for key in
+             [pygame.K_SPACE, pygame.K_e, pygame.K_q] if keys[key]]
 
     def recharge(self):
         if not self.ready_to_shoot:
@@ -63,21 +46,17 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right >= self.max_x_constraint:
             self.rect.right = self.max_x_constraint
 
-    def shoot_laser(self):
-        self.lasers.add(Laser(self.rect.center, -8, self.rect.bottom))
-
-    def shoot_left_diagonal_laser(self):
-        self.left_diagonal_lasers.add(DiagonalLaser(self.rect.center, -5, -5,
-                                                    self.rect.bottom))
-
-    def shoot_right_diagonal_laser(self):
-        self.right_diagonal_lasers.add(DiagonalLaser(self.rect.center, 5, -5,
-                                                     self.rect.bottom))
+    def shoot_laser(self, key):
+        self.lasers.add(FrontLaser(self.rect.center, self.rect.bottom,
+                                   True)) if key == pygame.K_SPACE \
+            else self.lasers.add(
+            DiagonalLaser(self.rect.center, self.rect.bottom, key))
+        self.ready_to_shoot = False
+        self.last_shoot_laser_time = pygame.time.get_ticks()
+        self.laser_sound.play()
 
     def update(self):
         self.get_input()
         self.constraint()
         self.recharge()
         self.lasers.update()
-        self.left_diagonal_lasers.update()
-        self.right_diagonal_lasers.update()
