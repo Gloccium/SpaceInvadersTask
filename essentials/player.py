@@ -31,23 +31,24 @@ class Player(pygame.sprite.Sprite):
         elif keys[pygame.K_LEFT] or keys[pygame.K_a]:
             self.rect.x -= self.speed
 
-        if keys[pygame.K_SPACE] and self.ready_to_shoot:
-            self.shoot_laser()
-            self.ready_to_shoot = False
-            self.last_shoot_laser_time = pygame.time.get_ticks()
-            self.laser_sound.play()
+        if self.ready_to_shoot:
+            if keys[pygame.K_SPACE]:
+                self.shoot_laser()
+                self.ready_to_shoot = False
+                self.last_shoot_laser_time = pygame.time.get_ticks()
+                self.laser_sound.play()
 
-        if keys[pygame.K_q] and self.ready_to_shoot:
-            self.shoot_left_diagonal_laser()
-            self.ready_to_shoot = False
-            self.last_shoot_laser_time = pygame.time.get_ticks()
-            self.laser_sound.play()
+            if keys[pygame.K_q]:
+                self.shoot_left_diagonal_laser()
+                self.ready_to_shoot = False
+                self.last_shoot_laser_time = pygame.time.get_ticks()
+                self.laser_sound.play()
 
-        if keys[pygame.K_e] and self.ready_to_shoot:
-            self.shoot_right_diagonal_laser()
-            self.ready_to_shoot = False
-            self.last_shoot_laser_time = pygame.time.get_ticks()
-            self.laser_sound.play()
+            if keys[pygame.K_e]:
+                self.shoot_right_diagonal_laser()
+                self.ready_to_shoot = False
+                self.last_shoot_laser_time = pygame.time.get_ticks()
+                self.laser_sound.play()
 
     def recharge(self):
         if not self.ready_to_shoot:
