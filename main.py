@@ -269,6 +269,7 @@ def start_game():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
+                game.high_score.append(game.score)
                 game.load_highest_score()
                 pygame.quit()
                 exit()
