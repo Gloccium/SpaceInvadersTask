@@ -1,4 +1,5 @@
 import pygame
+import json
 from essentials import obstacle
 from sys import exit
 from os import path
@@ -31,9 +32,9 @@ class Game:
                 self.life_surf.get_size()[0] * 2 + 20)
 
         self.score = 0
-        with open('leaderboard.txt', 'r') as f:
+        with open('leaderboard.json', 'r') as f:
             try:
-                self.high_score = f.readline()
+                self.high_score = json.load(f)['best_score']
             except ValueError:
                 raise ValueError
 
@@ -164,6 +165,7 @@ class Game:
                     self.player_get_debuff()
                     if self.lives <= 0:
                         self.game_state = GameStates.RESTART_WINDOW.value
+                        self.high_score.append(self.score)
                         self.load_highest_score()
         # Aliens
         if self.aliens:
@@ -172,6 +174,7 @@ class Game:
 
                 if pygame.sprite.spritecollide(alien, self.player, False):
                     self.game_state = GameStates.RESTART_WINDOW.value
+                    self.high_score.append(self.score)
                     self.load_highest_score()
 
     def display_lives(self):
@@ -204,13 +207,12 @@ class Game:
             show_pause_window(screen)
             pygame.display.update()
 
-    def update_highest_score(self):
-        if self.score > int(self.high_score):
-            self.high_score = self.score
-
     def load_highest_score(self):
-        with open('leaderboard.txt', 'w') as f:
-            f.write(str(self.high_score))
+        with open('leaderboard.json', 'r') as f:
+            leaderboard = json.load(f)
+            leaderboard['best_score'] = self.high_score
+        with open('leaderboard.json', 'w') as f:
+            f.write(json.dumps(leaderboard))
 
     def player_get_bonus(self):
         self.player.sprite.laser_cooldown = 100
@@ -228,7 +230,6 @@ class Game:
         self.player.update()
         self.alien_lasers.update()
         self.extra_alien.update()
-        self.update_highest_score()
 
         self.aliens.update(self.alien_direction)
         self.alien_position_checkup()

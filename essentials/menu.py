@@ -1,4 +1,5 @@
 import pygame
+import json
 from os import path
 
 
@@ -84,21 +85,19 @@ def show_pause_window(screen):
 
 
 def show_leaderboard_window(screen):
-    with open('leaderboard.txt') as f:
-        high_score = f.readline()
+    with open('leaderboard.json', 'r') as f:
+        high_score = sorted(json.load(f)['best_score'], reverse=True)
 
-    font = pygame.font.Font(path.join('interface', 'font', 'Pixeled.ttf'),
-                            20)
+    font = pygame.font.Font(path.join('interface', 'font', 'Pixeled.ttf'), 20)
 
-    high_score_message = font.render(f'The highest score is:'
-                                     f' {high_score}',
-                                     False, 'white')
-    high_score_message_rect = high_score_message.get_rect(center=(300, 200))
-
+    message_list = []
+    [message_list.append((font.render(f'{i + 1}: {high_score[i]}', False,
+                                      'white'), 200 + 50 * i)) for i in
+     range(3)]
     game_message = font.render('Press M to return to main menu', False,
                                'white')
     game_message_rect = game_message.get_rect(center=(300, 350))
-
     screen.fill('black')
-    screen.blit(high_score_message, high_score_message_rect)
+    [screen.blit(score_message, score_message.get_rect(center=(300, y))) for
+     score_message, y in message_list]
     screen.blit(game_message, game_message_rect)
