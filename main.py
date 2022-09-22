@@ -210,7 +210,8 @@ class Game:
     def load_highest_score(self):
         with open('leaderboard.json', 'r') as f:
             leaderboard = json.load(f)
-            leaderboard['best_score'] = self.high_score
+            leaderboard['best_score'] = sorted(self.high_score,
+                                               reverse=True)[:3]
         with open('leaderboard.json', 'w') as f:
             f.write(json.dumps(leaderboard))
 
