@@ -7,6 +7,7 @@ from essentials.menu import show_start_menu, show_restart_window,\
     show_leaderboard_window
 from essentials.game_states import GameStates
 
+
 def start_game():
     clock = pygame.time.Clock()
     game = Game(screen, screen_width, screen_height)
